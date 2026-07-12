@@ -43,7 +43,7 @@ if (addedSongs.length === 0) {
 let content = '';
 if (addedSongs.length === 1) {
   const song = addedSongs[0];
-  const searchUrl = `https://canvas.echomusic.fun/?search=${encodeURIComponent(song.song)}`;
+  const searchUrl = `https://lossless.echomusic.fun/?search=${encodeURIComponent(song.song)}`;
   content = `New Canvas Added
 
 Contributor: ${prAuthor}
@@ -53,7 +53,7 @@ Pull Request: ${prLink}`;
 } else {
   let songList = '';
   addedSongs.forEach(song => {
-    const searchUrl = `https://canvas.echomusic.fun/?search=${encodeURIComponent(song.song)}`;
+    const searchUrl = `https://lossless.echomusic.fun/?search=${encodeURIComponent(song.song)}`;
     songList += `- ${song.song} by ${song.artist}\n  Link: ${searchUrl}\n`;
   });
 

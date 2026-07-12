@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#121212">
-    <title>Developer Guide — Echo Music Canvas</title>
-    <meta name="description" content="Learn how to integrate Echo Music Canvas into your app or website. Complete API reference, code examples, and integration guides.">
+    <title>Developer Guide — Echo Music Lossless</title>
+    <meta name="description" content="Learn how to integrate Echo Music Lossless audio into your app or website. Complete API reference, code examples, and integration guides.">
 
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://canvas.echomusic.fun/developer.html">
-    <meta property="og:title" content="Developer Guide — Echo Music Canvas">
-    <meta property="og:description" content="Integrate Echo Music Canvas visuals into your own app or website with our developer guide.">
-    <meta property="og:image" content="https://canvas.echomusic.fun/App%20Logo/echo.png">
+    <meta property="og:url" content="https://lossless.echomusic.fun/developer.html">
+    <meta property="og:title" content="Developer Guide — Echo Music Lossless">
+    <meta property="og:description" content="Integrate Echo Music Lossless audio into your own app or website with our developer guide.">
+    <meta property="og:image" content="https://lossless.echomusic.fun/App%20Logo/echo.png">
 
     <link rel="icon" type="image/png" href="App Logo/echo.png">
     <link rel="stylesheet" href="styles.css?v=3">
@@ -40,8 +40,8 @@
 
     <main class="container dev-container">
         <header style="margin-bottom: 4rem;">
-            <h1 id="main-title">Integrate Canvas<br>Into Your App</h1>
-            <p>Use the Echo Music Canvas database to add beautiful looping motion visuals to your music player, website, or application. It's open, free, and community-driven.</p>
+            <h1 id="main-title">Integrate Lossless Audio<br>Into Your App</h1>
+            <p>Use the Echo Music Lossless database to add high-fidelity FLAC audio to your music player, website, or application. It's open, free, and community-driven.</p>
         </header>
 
         
@@ -49,11 +49,11 @@
             <h2 class="section-title">Quick Start</h2>
             <div class="dev-card">
                 <h3><i class="fas fa-bolt"></i> How It Works</h3>
-                <p>The Echo Music Canvas database is a single JSON file hosted on GitHub. It maps <strong>song + artist</strong> pairs to <strong>looping video URLs</strong>. You fetch the JSON, match songs by name, and play the corresponding video as a background visual.</p>
+                <p>The Echo Music Lossless database is a single JSON file hosted on GitHub. It maps <strong>song + artist</strong> pairs to <strong>FLAC audio URLs</strong>. You fetch the JSON, match songs by name, and stream the corresponding audio.</p>
                 <div class="dev-flow">
                     <div class="flow-step">
                         <span class="flow-num">1</span>
-                        <span>Fetch <code>canvas.json</code></span>
+                        <span>Fetch <code>music.json</code></span>
                     </div>
                     <i class="fas fa-arrow-right flow-arrow"></i>
                     <div class="flow-step">
@@ -63,7 +63,7 @@
                     <i class="fas fa-arrow-right flow-arrow"></i>
                     <div class="flow-step">
                         <span class="flow-num">3</span>
-                        <span>Play video canvas</span>
+                        <span>Play lossless track</span>
                     </div>
                 </div>
             </div>
@@ -81,7 +81,7 @@
                         <span class="code-lang">ENDPOINT</span>
                         <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button>
                     </div>
-                    <pre><code>https://canvas.echomusic.fun/canvas.json</code></pre>
+                    <pre><code>https://lossless.echomusic.fun/music.json</code></pre>
                 </div>
                 <p style="margin-top: 1rem; font-size: 0.88rem; color: var(--text-dim);">
                     <i class="fas fa-info-circle"></i> This URL always serves the latest version from the <code>main</code> branch. Cache it on your server for performance.
@@ -101,12 +101,7 @@
     {
       "song": "Blinding Lights",
       "artist": "The Weeknd",
-      "url": "https://canvas.echomusic.app/Song/20.m3u8"
-    },
-    {
-      "song": "Dracula",
-      "artist": "Tame Impala",
-      "url": "https://canvas.echomusic.app/Song/1.mp4"
+      "url": "https://lossless.echomusic.fun/Music/blinding_lights.flac"
     }
   ]
 }</code></pre>
@@ -121,7 +116,7 @@
                             <tr><td><code>items</code></td><td>Array</td><td>The list of all canvas entries</td></tr>
                             <tr><td><code>items[].song</code></td><td>String</td><td>The song title (case-sensitive as contributed)</td></tr>
                             <tr><td><code>items[].artist</code></td><td>String</td><td>The artist or band name</td></tr>
-                            <tr><td><code>items[].url</code></td><td>String</td><td>Direct URL to the canvas video (<code>.mp4</code> or <code>.m3u8</code>)</td></tr>
+                            <tr><td><code>items[].url</code></td><td>String</td><td>Direct URL to the audio file (<code>.flac</code>)</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -141,17 +136,17 @@
                         <span class="code-lang">JavaScript</span>
                         <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button>
                     </div>
-                    <pre><code>const CANVAS_URL = 'https://canvas.echomusic.fun/canvas.json';
+                    <pre><code>const DATABASE_URL = 'https://lossless.echomusic.fun/music.json';
 
 // Fetch and cache the canvas database
-async function loadCanvasDB() {
-  const res = await fetch(CANVAS_URL);
+async function loadDB() {
+  const res = await fetch(DATABASE_URL);
   const data = await res.json();
   return data.items || [];
 }
 
 // Find a canvas for a given song + artist
-function findCanvas(items, songTitle, artistName) {
+function findTrack(items, songTitle, artistName) {
   const query = `${songTitle} ${artistName}`.toLowerCase();
   return items.find(item => {
     const entry = `${item.song} ${item.artist}`.toLowerCase();
@@ -160,15 +155,13 @@ function findCanvas(items, songTitle, artistName) {
 }
 
 // Usage
-const canvasDB = await loadCanvasDB();
-const match = findCanvas(canvasDB, 'Blinding Lights', 'The Weeknd');
+const db = await loadDB();
+const match = findTrack(db, 'Blinding Lights', 'The Weeknd');
 
 if (match) {
-  const video = document.getElementById('canvas-player');
-  video.src = match.url;
-  video.loop = true;
-  video.muted = true;
-  video.play();
+  const audio = document.getElementById('audio-player');
+  audio.src = match.url;
+  audio.play();
 }</code></pre>
                 </div>
             </div>
@@ -183,14 +176,7 @@ if (match) {
                         <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button>
                     </div>
                     <pre><code>&lt;div class="player-container" style="position: relative;"&gt;
-  &lt;!-- Canvas background --&gt;
-  &lt;video id="canvas-player"
-         loop muted playsinline
-         style="position: absolute; inset: 0;
-                width: 100%; height: 100%;
-                object-fit: cover; z-index: 0;
-                opacity: 0.85;"&gt;
-  &lt;/video&gt;
+  &lt;audio id="audio-player" controls style="width: 100%;"&gt;&lt;/audio&gt;
 
   &lt;!-- Your player UI goes on top --&gt;
   &lt;div style="position: relative; z-index: 1;"&gt;
@@ -215,14 +201,14 @@ if (match) {
 // implementation("androidx.media3:media3-exoplayer:1.3.0")
 // implementation("androidx.media3:media3-ui:1.3.0")
 
-// 2. Fetch canvas.json (using OkHttp / Retrofit)
-suspend fun fetchCanvasDB(): List&lt;CanvasEntry&gt; {
-    val response = httpClient.get(CANVAS_JSON_URL)
+// 2. Fetch music.json (using OkHttp / Retrofit)
+suspend fun fetchDB(): List&lt;TrackEntry&gt; {
+    val response = httpClient.get(DATABASE_JSON_URL)
     val json = JSONObject(response.body.string())
     val items = json.getJSONArray("items")
     return (0 until items.length()).map { i ->
         val obj = items.getJSONObject(i)
-        CanvasEntry(
+        TrackEntry(
             song = obj.getString("song"),
             artist = obj.getString("artist"),
             url = obj.getString("url")
@@ -230,15 +216,13 @@ suspend fun fetchCanvasDB(): List&lt;CanvasEntry&gt; {
     }
 }
 
-// 3. Play the canvas video
-fun playCanvas(url: String, playerView: PlayerView) {
+// 3. Play the audio
+fun playAudio(url: String, playerView: PlayerView) {
     val player = ExoPlayer.Builder(context).build()
     playerView.player = player
 
     val mediaItem = MediaItem.fromUri(url)
     player.setMediaItem(mediaItem)
-    player.repeatMode = Player.REPEAT_MODE_ONE
-    player.volume = 0f  // muted background visual
     player.prepare()
     player.play()
 }</code></pre>
@@ -256,44 +240,29 @@ fun playCanvas(url: String, playerView: PlayerView) {
                     </div>
                     <pre><code>import AVKit
 
-struct CanvasEntry: Codable {
+struct TrackEntry: Codable {
     let song: String
     let artist: String
     let url: String
 }
 
-struct CanvasDB: Codable {
-    let items: [CanvasEntry]
+struct TrackDB: Codable {
+    let items: [TrackEntry]
 }
 
-// Fetch the canvas database
-func loadCanvasDB() async throws -> [CanvasEntry] {
-    let url = URL(string: "https://canvas.echomusic.fun/canvas.json")!
+// Fetch the database
+func loadDB() async throws -> [TrackEntry] {
+    let url = URL(string: "https://lossless.echomusic.fun/music.json")!
     let (data, _) = try await URLSession.shared.data(from: url)
-    let db = try JSONDecoder().decode(CanvasDB.self, from: data)
+    let db = try JSONDecoder().decode(TrackDB.self, from: data)
     return db.items
 }
 
-// Play canvas in a view
-func playCanvas(urlString: String, in view: UIView) {
+// Play audio
+func playAudio(urlString: String) {
     guard let url = URL(string: urlString) else { return }
     let player = AVPlayer(url: url)
-    player.isMuted = true
-
-    let playerLayer = AVPlayerLayer(player: player)
-    playerLayer.videoGravity = .resizeAspectFill
-    playerLayer.frame = view.bounds
-    view.layer.insertSublayer(playerLayer, at: 0)
-
-    // Loop playback
-    NotificationCenter.default.addObserver(
-        forName: .AVPlayerItemDidPlayToEndTime,
-        object: player.currentItem,
-        queue: .main
-    ) { _ in
-        player.seek(to: .zero)
-        player.play()
-    }
+    player.play()
 
     player.play()
 }</code></pre>
@@ -311,10 +280,10 @@ func playCanvas(urlString: String, in view: UIView) {
                     </div>
                     <pre><code>import requests
 
-CANVAS_URL = "https://canvas.echomusic.fun/canvas.json"
+CANVAS_URL = "https://lossless.echomusic.fun/music.json"
 
-def load_canvas_db():
-    """Fetch the full canvas database."""
+def load_db():
+    """Fetch the full track database."""
     response = requests.get(CANVAS_URL)
     response.raise_for_status()
     return response.json().get("items", [])
@@ -329,10 +298,10 @@ def find_canvas(items, song_title, artist_name):
     return None
 
 # Example usage
-db = load_canvas_db()
-canvas = find_canvas(db, "Starboy (feat. Daft Punk)", "The Weeknd")
-if canvas:
-    print(f"Canvas URL: {canvas['url']}")
+db = load_db()
+track = find_canvas(db, "Starboy (feat. Daft Punk)", "The Weeknd")
+if track:
+    print(f"Track URL: {track['url']}")
 </code></pre>
                 </div>
             </div>
@@ -345,7 +314,7 @@ if canvas:
                 <article class="step-card">
                     <span class="step-number"><i class="fas fa-server"></i></span>
                     <h3>Cache the Database</h3>
-                    <p>Don't fetch <code>canvas.json</code> on every song change. Load it once on startup and cache it locally. Refresh periodically (e.g., every 30 minutes) to pick up new community contributions.</p>
+                    <p>Don't fetch <code>music.json</code> on every song change. Load it once on startup and cache it locally. Refresh periodically (e.g., every 30 minutes) to pick up new community contributions.</p>
                 </article>
                 <article class="step-card">
                     <span class="step-number"><i class="fas fa-search"></i></span>
@@ -354,13 +323,13 @@ if canvas:
                 </article>
                 <article class="step-card">
                     <span class="step-number"><i class="fas fa-video"></i></span>
-                    <h3>Handle Both Formats</h3>
-                    <p>Canvas URLs can be <code>.mp4</code> (direct video) or <code>.m3u8</code> (HLS stream). On web, use <a href="https://github.com/video-dev/hls.js/" target="_blank">hls.js</a> for HLS. On mobile, most players support HLS natively.</p>
+                    <h3>Support FLAC</h3>
+                    <p>Track URLs are <code>.flac</code>. On web, most modern browsers support it natively. For mobile, AVPlayer and ExoPlayer both support FLAC.</p>
                 </article>
                 <article class="step-card">
-                    <span class="step-number"><i class="fas fa-volume-mute"></i></span>
-                    <h3>Mute & Loop</h3>
-                    <p>Canvas videos are visual-only backgrounds. Always set them to <strong>muted</strong> and <strong>loop</strong>. This also enables autoplay on most browsers without user interaction.</p>
+                    <span class="step-number"><i class="fas fa-volume-up"></i></span>
+                    <h3>High Fidelity</h3>
+                    <p>Always ensure users are on a good connection when streaming lossless files, or offer a way to download them offline to save bandwidth.</p>
                 </article>
             </div>
         </section>
@@ -382,7 +351,7 @@ if canvas:
                         <div class="info-icon"><i class="fas fa-heart"></i></div>
                         <div>
                             <strong>Attribution</strong>
-                            <p>Please credit Echo Music Canvas in your app or website with a link back to <code>canvas.echomusic.fun</code>.</p>
+                            <p>Please credit Echo Music Lossless in your app or website with a link back to <code>lossless.echomusic.fun</code>.</p>
                         </div>
                     </div>
                     <div class="dev-info-item">

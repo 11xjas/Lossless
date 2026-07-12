@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#121212">
-    <title>Pending Contributions — Echo Music Canvas</title>
-    <meta name="description" content="View all pending canvas contributions waiting to be merged into the Echo Music Canvas database.">
+    <title>Pending Contributions — Echo Music Lossless</title>
+    <meta name="description" content="View all pending lossless contributions waiting to be merged into the Echo Music Lossless database.">
 
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://canvas.echomusic.fun/pending.html">
-    <meta property="og:title" content="Pending Contributions — Echo Music Canvas">
-    <meta property="og:description" content="See what canvas contributions are waiting to be reviewed and merged.">
-    <meta property="og:image" content="https://canvas.echomusic.fun/App%20Logo/echo.png">
+    <meta property="og:url" content="https://lossless.echomusic.fun/pending.html">
+    <meta property="og:title" content="Pending Contributions — Echo Music Lossless">
+    <meta property="og:description" content="See what lossless contributions are waiting to be reviewed and merged.">
+    <meta property="og:image" content="https://lossless.echomusic.fun/App%20Logo/echo.png">
 
     <link rel="icon" type="image/png" href="App Logo/echo.png">
     <link rel="stylesheet" href="styles.css?v=3">
@@ -42,7 +42,7 @@
     <main class="container">
         <header style="margin-bottom: 3rem;">
             <h1 id="main-title">Pending Contributions</h1>
-            <p>These canvas submissions are waiting to be reviewed and merged. Once approved, they'll appear in the main gallery.</p>
+            <p>These lossless track submissions are waiting to be reviewed and merged. Once approved, they'll appear in the main track directory.</p>
         </header>
 
         <section class="status-bar" style="margin-top: 0;">
@@ -58,7 +58,7 @@
             <div class="empty-state" style="padding: 4rem 2rem; text-align: center;">
                 <i class="fas fa-check-double" style="font-size: 2.5rem; color: #059669; margin-bottom: 1rem;"></i>
                 <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem;">All caught up!</p>
-                <p style="color: var(--text-dim);">There are no pending canvas contributions at the moment. Be the first to <a href="contribute.html" style="color: var(--accent-monochrome); font-weight: 600;">submit one</a>!</p>
+                <p style="color: var(--text-dim);">There are no pending lossless contributions at the moment. Be the first to <a href="contribute.html" style="color: var(--accent-monochrome); font-weight: 600;">submit one</a>!</p>
             </div>
         </div>
 
@@ -77,7 +77,7 @@
         <div id="support-section" class="footer-content">
             <div class="footer-credits">
                 <p style="font-size: 0.85rem; opacity: 0.7;">
-                    Echo Music Canvas is a fork of <a href="https://github.com/vivizzz007/vivimusicanvas" target="_blank" rel="noopener">vivimusicanvas</a> by <a href="https://github.com/vivizzz007" target="_blank" rel="noopener">vivizzz007</a>.
+                    Echo Music Lossless is a fork of <a href="https://github.com/vivizzz007/vivimusicanvas" target="_blank" rel="noopener">vivimusicanvas</a> by <a href="https://github.com/vivizzz007" target="_blank" rel="noopener">vivizzz007</a>.
                 </p>
                 <p style="margin-top: 0.5rem; font-size: 0.8rem; opacity: 0.6;">Licensed under <a href="LICENSE" target="_blank">GPL-3.0</a>.</p>
             </div>
@@ -87,7 +87,7 @@
     <script>
         const GITHUB_API_URL = 'https://api.github.com';
         const TARGET_OWNER = 'EchoMusicApp';
-        const TARGET_REPO = 'Echo-Music-Canvas';
+        const TARGET_REPO = 'Lossless';
 
         async function loadPendingPRs() {
             const grid = document.getElementById('pending-grid');
@@ -110,7 +110,7 @@
                 const pullRequests = await response.json();
 
                 const canvasPRs = pullRequests.filter(pr =>
-                    pr.title.toLowerCase().includes('canvas') ||
+                    pr.title.toLowerCase().includes('lossless') ||
                     pr.title.toLowerCase().includes('feat:') ||
                     pr.title.toLowerCase().includes('add')
                 );
@@ -127,7 +127,7 @@
 
                 for (const pr of canvasPRs) {
                     const songs = parseSongsFromPR(pr);
-                    const videoUrl = await fetchPRVideoUrl(pr);
+                    const videoUrl = await fetchPRAudioUrl(pr);
                     const card = createPRCard(pr, songs, videoUrl);
                     grid.appendChild(card);
                 }
@@ -167,7 +167,7 @@
 
             // Fallback: parse from PR title
             if (songs.length === 0) {
-                const titleMatch = pr.title.match(/(?:add|feat:)\s*(?:canvas\s*(?:for)?\s*)?(.+?)(?:\s*[—–-]\s*(.+))?$/i);
+                const titleMatch = pr.title.match(/(?:add|feat:)\s*(?:lossless\s*(?:track\s*)?(?:for)?\s*)?(.+?)(?:\s*[—–-]\s*(.+))?$/i);
                 if (titleMatch) {
                     songs.push({
                         song: titleMatch[1]?.trim() || pr.title,
@@ -184,7 +184,7 @@
             return songs;
         }
 
-        async function fetchPRVideoUrl(pr) {
+        async function fetchPRAudioUrl(pr) {
             try {
                 const filesRes = await fetch(
                     `${GITHUB_API_URL}/repos/${TARGET_OWNER}/${TARGET_REPO}/pulls/${pr.number}/files?per_page=100`,
@@ -195,8 +195,7 @@
                 const files = await filesRes.json();
 
                 const videoFile = files.find(f =>
-                    f.filename.toLowerCase().endsWith('.mp4') ||
-                    f.filename.toLowerCase().endsWith('.m3u8')
+                    f.filename.toLowerCase().endsWith('.flac')
                 );
 
                 if (videoFile) {
@@ -213,9 +212,9 @@
 
         function parseLiveVideoFromPR(pr) {
             const body = pr.body || '';
-            const urlMatch = body.match(/(?:Canvas URL[^:\n]*|Path)[:\s]*`?([^`\s\n]+\.mp4)`?/i);
+            const urlMatch = body.match(/(?:Track URL[^:\n]*|Path)[:\s]*`?([^`\s\n]+\.flac)`?/i);
             if (urlMatch) return urlMatch[1];
-            const directMatch = body.match(/(https?:\/\/[^\s`\n]+\.mp4)/i);
+            const directMatch = body.match(/(https?:\/\/[^\s`\n]+\.flac)/i);
             if (directMatch) return directMatch[1];
             return null;
         }
@@ -245,11 +244,8 @@
                 <div class="pending-card-layout">
                     <div class="pending-video-col">
                         ${videoUrl ? `
-                            <div class="pending-video-wrapper">
-                                <video id="${videoId}" loop muted playsinline></video>
-                                <div class="pending-video-overlay">
-                                    <i class="fas fa-play"></i>
-                                </div>
+                            <div class="pending-video-wrapper" style="display: flex; align-items: center; justify-content: center; background: #222;">
+                                <audio id="${videoId}" src="${videoUrl}" controls style="width: 90%;"></audio>
                             </div>
                         ` : `
                             <div class="pending-video-wrapper pending-no-video">
@@ -283,45 +279,7 @@
                 </div>
             `;
 
-            // Set up video playback
-            if (videoUrl) {
-                const videoEl = card.querySelector(`#${videoId}`);
-                const wrapper = card.querySelector('.pending-video-wrapper');
-                const overlay = card.querySelector('.pending-video-overlay');
-
-                const isM3u8 = videoUrl.toLowerCase().endsWith('.m3u8');
-
-                if (isM3u8) {
-                    if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-                        const hls = new Hls();
-                        hls.loadSource(videoUrl);
-                        hls.attachMedia(videoEl);
-                    } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
-                        videoEl.src = videoUrl;
-                    }
-                } else {
-                    videoEl.src = videoUrl;
-                    videoEl.load();
-                }
-
-                wrapper.addEventListener('mouseenter', () => {
-                    overlay.style.opacity = '0';
-                    videoEl.play().catch(() => {});
-                });
-                wrapper.addEventListener('mouseleave', () => {
-                    overlay.style.opacity = '1';
-                    videoEl.pause();
-                });
-                wrapper.addEventListener('click', () => {
-                    if (videoEl.paused) {
-                        overlay.style.opacity = '0';
-                        videoEl.play().catch(() => {});
-                    } else {
-                        overlay.style.opacity = '1';
-                        videoEl.pause();
-                    }
-                });
-            }
+            // (Audio player handles its own controls)
 
             return card;
         }

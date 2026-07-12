@@ -38,7 +38,7 @@ export async function onRequest(context) {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "User-Agent": "Echo-Music-Canvas-Portal"
+        "User-Agent": "Echo-Music-Lossless-Portal"
       },
       body: JSON.stringify({
         client_id: clientId,

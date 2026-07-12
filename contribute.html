@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <meta name="theme-color" content="#121212">
-    <title>Submit Canvas - Echo Music Canvas Hub</title>
+    <title>Submit Lossless Track - Echo Music Lossless Hub</title>
     <link class="brand-favicon" rel="icon" type="image/png" href="App Logo/echo.png">
     <link rel="stylesheet" href="styles.css?v=4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,7 +29,7 @@
 
         <section id="login-section" class="auth-clean-section" style="display: none; text-align: center; max-width: 480px; margin: 4rem auto 0 auto;">
             <h3 class="auth-title">Connect to GitHub</h3>
-            <p class="auth-desc">To submit a canvas, please authenticate with your GitHub account. This allows the portal to open a Pull Request on your behalf, crediting you directly for your contribution.</p>
+            <p class="auth-desc">To submit a lossless track, please authenticate with your GitHub account. This allows the portal to open a Pull Request on your behalf, crediting you directly for your contribution.</p>
             <button id="login-btn" class="btn btn-primary btn-auth-login">
                 <i class="fab fa-github"></i> Log in with GitHub
             </button>
@@ -62,46 +62,46 @@
                     <div class="segmented-control">
                         <input type="radio" id="type-song" name="dest-dir" value="Song" checked>
                         <label for="type-song" class="segment-btn">
-                            <i class="fas fa-music"></i> Song Canvas
+                            <i class="fas fa-music"></i> Single Track
                         </label>
                         <input type="radio" id="type-album" name="dest-dir" value="Album">
                         <label for="type-album" class="segment-btn">
-                            <i class="fas fa-compact-disc"></i> Album Canvas
+                            <i class="fas fa-compact-disc"></i> Album Track
                         </label>
                     </div>
-                    <span class="field-desc">Choose "Song Canvas" for single tracks, or "Album Canvas" for entire album loops.</span>
+                    <span class="field-desc">Choose "Single Track" for individual songs, or "Album Track" for an entire album release.</span>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Canvas Source</label>
+                    <label class="form-label">Audio Source</label>
                     <div class="segmented-control">
                         <input type="radio" id="source-upload" name="canvas-source" value="upload" checked>
                         <label for="source-upload" class="segment-btn">
-                            <i class="fas fa-cloud-upload-alt"></i> Upload New Video
+                            <i class="fas fa-cloud-upload-alt"></i> Upload New Audio
                         </label>
                         <input type="radio" id="source-existing" name="canvas-source" value="existing">
                         <label for="source-existing" class="segment-btn">
-                            <i class="fas fa-link"></i> Use Existing Canvas
+                            <i class="fas fa-link"></i> Use Existing Audio
                         </label>
                     </div>
-                    <span class="field-desc">Upload a new video file, or reuse a canvas URL that's already in the gallery.</span>
+                    <span class="field-desc">Upload a new FLAC file, or reuse an audio URL that's already in the library.</span>
                 </div>
 
                 <div id="upload-panel">
                     <div class="form-group">
-                        <label class="form-label">Visualizer Video File</label>
+                        <label class="form-label">Lossless Audio File</label>
                         <div id="drop-zone" class="drag-drop-box">
-                            <input type="file" id="file-input" accept="video/mp4,.mp4" style="display: none;">
+                            <input type="file" id="file-input" accept="audio/flac,.flac" style="display: none;">
                             <i class="fas fa-cloud-upload-alt drop-icon"></i>
-                            <h4 class="drop-text">Drag &amp; drop video here, or <span class="browse-link">browse files</span></h4>
-                            <p class="drop-subtext">Supports .mp4 only &mdash; Max 5 MB</p>
+                            <h4 class="drop-text">Drag &amp; drop audio here, or <span class="browse-link">browse files</span></h4>
+                            <p class="drop-subtext">Supports .flac only &mdash; Max 99 MB</p>
                         </div>
 
                         <div id="file-info-banner" class="file-details-banner" style="display: none;">
                             <div class="file-meta">
-                                <i class="fas fa-file-video file-icon"></i>
+                                <i class="fas fa-file-audio file-icon"></i>
                                 <div>
-                                    <strong id="selected-file-name" class="file-name-text">video.mp4</strong>
+                                    <strong id="selected-file-name" class="file-name-text">audio.flac</strong>
                                     <span id="selected-file-size" class="file-size-text">0.00 MB</span>
                                 </div>
                             </div>
@@ -116,19 +116,19 @@
                         <div class="validation-list">
                             <div class="validation-item" id="check-format">
                                 <i class="fas fa-circle-notch fa-spin check-status"></i>
-                                <span>File format must be <code>.mp4</code></span>
+                                <span>File format must be <code>.flac</code></span>
                             </div>
                             <div class="validation-item" id="check-size">
                                 <i class="fas fa-circle-notch fa-spin check-status"></i>
-                                <span>File size must be equal to or less than <strong>5 MB</strong></span>
+                                <span>File size must be equal to or less than <strong>99 MB</strong></span>
                             </div>
                             <div class="validation-item" id="check-duration">
                                 <i class="fas fa-circle-notch fa-spin check-status"></i>
-                                <span>Duration must be between <strong>3 and 30 seconds</strong></span>
+                                <span>File must contain valid fLaC signature</span>
                             </div>
-                            <div class="validation-item" id="check-aspect">
+                            <div class="validation-item" id="check-aspect" style="display: none;">
                                 <i class="fas fa-circle-notch fa-spin check-status"></i>
-                                <span>Video must be vertical (9:16 aspect ratio)</span>
+                                <span>Hidden item to preserve DOM structure</span>
                             </div>
                         </div>
                     </div>
@@ -136,19 +136,19 @@
 
                 <div id="existing-panel" style="display: none;">
                     <div class="form-group">
-                        <label class="form-label">Search Existing Canvas</label>
+                        <label class="form-label">Search Existing Track</label>
                         <div class="existing-search-box">
                             <i class="fas fa-search existing-search-icon"></i>
                             <input type="text" id="existing-search" placeholder="Search by song, artist, or URL…" autocomplete="off">
                         </div>
-                        <span class="field-desc">Search the gallery to find a canvas you want to reuse. The same video file will be linked to the new song entries.</span>
+                        <span class="field-desc">Search the library to find an audio file you want to reuse.</span>
                     </div>
                     <div id="existing-results" class="existing-results-list" style="display: none;"></div>
                     <div id="existing-selected-banner" class="existing-selected-card" style="display: none;">
                         <div class="existing-selected-meta">
-                            <i class="fas fa-film existing-selected-icon"></i>
+                            <i class="fas fa-music existing-selected-icon"></i>
                             <div>
-                                <strong id="existing-selected-title" class="existing-selected-name">Canvas Name</strong>
+                                <strong id="existing-selected-title" class="existing-selected-name">Track Name</strong>
                                 <span id="existing-selected-url" class="existing-selected-url-text"></span>
                             </div>
                         </div>
@@ -163,7 +163,7 @@
                         Songs to Link
                         <span class="song-count-badge" id="song-count-badge">0 songs</span>
                     </label>
-                    <span class="field-desc">Add one or more songs that should use this canvas. Each entry needs a song title and artist name.</span>
+                    <span class="field-desc">Add one or more songs that should use this audio file. Each entry needs a song title and artist name.</span>
 
                     <div id="song-entries-list" class="song-entries-list"></div>
 
@@ -187,7 +187,7 @@
                 <i class="fas fa-exclamation-circle"></i>
             </div>
             
-            <h3 id="status-title">Uploading Canvas...</h3>
+            <h3 id="status-title">Uploading Track...</h3>
             <p id="status-message" style="color: var(--text-dim); margin-bottom: 2rem; line-height: 1.7;">Please hold tight while we configure your fork and create the pull request.</p>
             
             <div id="pr-link-container" style="display: none; margin-bottom: 2rem;">
@@ -204,11 +204,9 @@
 
     <footer>
         <div class="footer-content">
-            <p>Echo Music Canvas Hub &copy; 2026. Code licensed under GPL-3.0.</p>
+            <p>Echo Music Lossless Hub &copy; 2026. Code licensed under GPL-3.0.</p>
         </div>
     </footer>
-
-    <video id="validation-video-element" style="display: none;" preload="metadata" muted></video>
 
     <script src="contribute.js?v=4"></script>
 </body>

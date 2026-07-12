@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const TARGET_OWNER = 'EchoMusicApp';
-    const TARGET_REPO = 'Echo-Music-Canvas';
+    const TARGET_REPO = 'Lossless';
     const GITHUB_API_URL = 'https://api.github.com';
-    const CANVAS_JSON_URL = 'https://raw.githubusercontent.com/EchoMusicApp/Echo-Music-Canvas/main/canvas.json';
+    const CANVAS_JSON_URL = 'https://raw.githubusercontent.com/EchoMusicApp/Lossless/main/music.json';
 
     let gitHubAccessToken = localStorage.getItem('gh_access_token') || null;
     let gitHubUsername = null;
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginBtn.addEventListener('click', () => {
         if (window.location.protocol === 'file:') {
-            window.location.href = 'https://canvas.echomusic.fun/api/auth';
+            window.location.href = 'https://lossless.echomusic.fun/api/auth';
         } else {
             window.location.href = '/api/auth';
         }
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             let statusUrl = '/api/auth/status';
             if (window.location.protocol === 'file:') {
-                statusUrl = 'https://canvas.echomusic.fun/api/auth/status';
+                statusUrl = 'https://lossless.echomusic.fun/api/auth/status';
             }
             const res  = await fetch(statusUrl);
             if (!res.ok) throw new Error();
@@ -294,57 +294,45 @@ document.addEventListener('DOMContentLoaded', () => {
         let formatPass = false, sizePass = false, durationPass = false, aspectPass = false;
 
         const ext = file.name.split('.').pop().toLowerCase();
-        if (ext === 'mp4') {
+        if (ext === 'flac') {
             formatPass = true;
             setCheckState(checkFormat, 'success');
         } else {
-            setCheckState(checkFormat, 'error', `Invalid file extension — only <code>.mp4</code> is accepted`);
+            setCheckState(checkFormat, 'error', `Invalid file extension — only <code>.flac</code> is accepted`);
         }
 
         const sizeMB = file.size / (1024 * 1024);
-        if (sizeMB <= 5.0 && file.size > 0) {
+        if (sizeMB <= 99.0 && file.size > 0) {
             sizePass = true;
-            setCheckState(checkSize, 'success', `File size is ${sizeMB.toFixed(2)} MB (&le; 5 MB limit)`);
+            setCheckState(checkSize, 'success', `File size is ${sizeMB.toFixed(2)} MB (&le; 99 MB limit)`);
         } else {
-            setCheckState(checkSize, 'error', `File size is ${sizeMB.toFixed(2)} MB. Must be under <strong>5 MB</strong>`);
+            setCheckState(checkSize, 'error', `File size is ${sizeMB.toFixed(2)} MB. Must be under <strong>99 MB</strong>`);
         }
 
-        const objectUrl = URL.createObjectURL(file);
-        validationVideo.src = objectUrl;
-
-        validationVideo.onloadedmetadata = () => {
-            const duration = validationVideo.duration;
-            const width    = validationVideo.videoWidth;
-            const height   = validationVideo.videoHeight;
-            const aspect   = width / height;
-
-            URL.revokeObjectURL(objectUrl);
-
-            if (duration >= 3.0 && duration <= 30.1) {
+        // Validate fLaC signature (first 4 bytes)
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const arr = (new Uint8Array(e.target.result)).subarray(0, 4);
+            let header = "";
+            for(let i = 0; i < arr.length; i++) header += String.fromCharCode(arr[i]);
+            
+            if (header === "fLaC") {
                 durationPass = true;
-                setCheckState(checkDuration, 'success', `Duration is ${duration.toFixed(1)} seconds (3–30s limit)`);
+                setCheckState(checkDuration, 'success', `Valid fLaC signature detected`);
             } else {
-                setCheckState(checkDuration, 'error', `Duration is ${duration.toFixed(1)}s. Must be between <strong>3 and 30 seconds</strong>`);
+                setCheckState(checkDuration, 'error', `Invalid fLaC signature detected. Must be a valid FLAC audio file.`);
             }
 
-            if (width < height && aspect <= 0.61) {
-                aspectPass = true;
-                setCheckState(checkAspect, 'success', `Vertical visualizer (${width}×${height}, ~9:16)`);
-            } else {
-                setCheckState(checkAspect, 'error', `Ratio is landscape/square (${width}×${height}). Must be vertical (<strong>9:16</strong>)`);
-            }
-
+            aspectPass = true;
             fileIsValid = formatPass && sizePass && durationPass && aspectPass;
             updateSubmitButtonState();
         };
-
-        validationVideo.onerror = () => {
-            URL.revokeObjectURL(objectUrl);
-            setCheckState(checkDuration, 'error', 'Failed to load video metadata. The file might be corrupted.');
-            setCheckState(checkAspect, 'error', 'Could not read video dimensions.');
+        reader.onerror = () => {
+            setCheckState(checkDuration, 'error', 'Failed to read file.');
             fileIsValid = false;
             updateSubmitButtonState();
         };
+        reader.readAsArrayBuffer(file.slice(0, 4));
     }
 
     let searchDebounce = null;
@@ -487,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     let apiUrl = `/api/search?q=${encodeURIComponent(query)}`;
                     if (window.location.protocol === 'file:') {
-                        apiUrl = `https://canvas.echomusic.fun/api/search?q=${encodeURIComponent(query)}`;
+                        apiUrl = `https://lossless.echomusic.fun/api/search?q=${encodeURIComponent(query)}`;
                     }
                     
                     const res = await fetch(apiUrl);
@@ -625,9 +613,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const sanitizedOriginalName = selectedFile.name.toLowerCase().replace(/[^a-z0-9._-]/g, '_');
         const cleanName    = sanitizedOriginalName.split('.')[0];
         const newFilename  = `${gitHubUsername.toLowerCase()}-${sanitizedOriginalName}`;
-        const targetPath   = `${destDir}/${newFilename}`;
-        const canvasUrl    = `https://canvas.echomusic.fun/${targetPath}`;
-        const branchName   = `canvas-${gitHubUsername.toLowerCase()}-${cleanName}`;
+        const targetPath   = `Music/${newFilename}`;
+        const canvasUrl    = `https://lossless.echomusic.fun/${targetPath}`;
+        const branchName   = `lossless-${gitHubUsername.toLowerCase()}-${cleanName}`;
 
         const forkOwner = await forkAndSync(branchName, primaryEntry.song);
 
@@ -653,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function submitWithExistingCanvas(entries, destDir) {
         const primaryEntry = entries[0];
         const slug        = primaryEntry.song.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 30);
-        const branchName  = `canvas-${gitHubUsername.toLowerCase()}-${slug}-link`;
+        const branchName  = `lossless-${gitHubUsername.toLowerCase()}-${slug}-link`;
 
         const forkOwner = await forkAndSync(branchName, primaryEntry.song);
 
@@ -709,11 +697,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function updateCanvasJson(forkOwner, branchName, entries, canvasVideoUrl) {
-        updateLoadingMessage('Updating Database', `Adding ${entries.length} song entr${entries.length === 1 ? 'y' : 'ies'} to canvas.json…`);
+        updateLoadingMessage('Updating Database', `Adding ${entries.length} song entr${entries.length === 1 ? 'y' : 'ies'} to music.json…`);
 
-        const canvasApiUrl = `${GITHUB_API_URL}/repos/${forkOwner}/${TARGET_REPO}/contents/canvas.json?ref=${branchName}`;
+        const canvasApiUrl = `${GITHUB_API_URL}/repos/${forkOwner}/${TARGET_REPO}/contents/music.json?ref=${branchName}`;
         const canvasRes = await fetch(canvasApiUrl, { headers: buildHeaders() });
-        if (!canvasRes.ok) throw new Error('Failed to download canvas.json from your fork.');
+        if (!canvasRes.ok) throw new Error('Failed to download music.json from your fork.');
 
         const canvasData    = await canvasRes.json();
         const canvasSha     = canvasData.sha;
@@ -721,7 +709,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvasObj     = JSON.parse(canvasContent);
 
         if (!canvasObj.items || !Array.isArray(canvasObj.items)) {
-            throw new Error('canvas.json items database is missing or corrupt.');
+            throw new Error('music.json items database is missing or corrupt.');
         }
 
         const newEntries = entries.map(entry => ({
@@ -733,17 +721,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const updatedContent = encodeBase64Utf8(JSON.stringify(canvasObj, null, 2) + '\n');
 
-        const updateRes = await fetch(`${GITHUB_API_URL}/repos/${forkOwner}/${TARGET_REPO}/contents/canvas.json`, {
+        const updateRes = await fetch(`${GITHUB_API_URL}/repos/${forkOwner}/${TARGET_REPO}/contents/music.json`, {
             method: 'PUT',
             headers: { ...buildHeaders(), 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message: `feat: update canvas.json — add ${entries.length} song(s)`,
+                message: `feat: update music.json — add ${entries.length} song(s)`,
                 content: updatedContent,
                 sha:     canvasSha,
                 branch:  branchName
             })
         });
-        if (!updateRes.ok) throw new Error('Failed to write updated canvas.json to your fork.');
+        if (!updateRes.ok) throw new Error('Failed to write updated music.json to your fork.');
     }
 
     async function openPullRequest(forkOwner, branchName, entries, destDir, canvasPath) {
@@ -751,14 +739,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const isSingle = entries.length === 1;
         const prTitle  = isSingle
-            ? `feat: add canvas for ${entries[0].song} — ${entries[0].artist}`
-            : `feat: add ${entries.length} songs to canvas — ${entries.map(e => e.song).slice(0, 3).join(', ')}${entries.length > 3 ? '…' : ''}`;
+            ? `feat: add lossless track for ${entries[0].song} — ${entries[0].artist}`
+            : `feat: add ${entries.length} songs to lossless — ${entries.map(e => e.song).slice(0, 3).join(', ')}${entries.length > 3 ? '…' : ''}`;
 
         const songTable = entries.map(e =>
             `| ${e.song} | ${e.artist} |`
         ).join('\n');
 
-        const prBody = `This Pull Request was submitted automatically via the Echo Music Canvas portal.\n\n### 🎵 Submission Metadata\n* **Category:** ${destDir}\n* **Canvas URL / Path:** \`${canvasPath}\`\n* **Total Songs Linked:** ${entries.length}\n\n### 🎶 Song Entries\n| Song Title | Artist |\n|---|---|\n${songTable}\n\n*Validation checks will run automatically on this contribution.*`;
+        const prBody = `This Pull Request was submitted automatically via the Echo Music Lossless portal.\n\n### 🎵 Submission Metadata\n* **Category:** ${destDir}\n* **Track URL / Path:** \`${canvasPath}\`\n* **Total Songs Linked:** ${entries.length}\n\n### 🎶 Song Entries\n| Song Title | Artist |\n|---|---|\n${songTable}\n\n*Validation checks will run automatically on this contribution.*`;
 
         const prRes = await fetch(`${GITHUB_API_URL}/repos/${TARGET_OWNER}/${TARGET_REPO}/pulls`, {
             method: 'POST',
@@ -793,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showLoadingView() {
-        showLoadingState('Submitting Canvas…', 'Initializing your contribution. Do not close this browser window.');
+        showLoadingState('Submitting Track…', 'Initializing your contribution. Do not close this browser window.');
     }
 
     function updateLoadingMessage(title, message) {
